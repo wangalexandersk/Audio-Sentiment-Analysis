@@ -104,13 +104,6 @@ def read_gcs_file(gcs_txt_path):
     print ("Read from Bucket Complete")
     return text_content
 
-def main(file_name):
-    audio_gcs_path = upload_to_bucket(file_name,file_name,'audio_records_conference_calls')
-    transcript_gcs_path = transcribe_gcs(audio_gcs_path)
-    text_content = read_gcs_file(transcript_gcs_path)
-    sent_results = analyze_sentiment(text_content)
-    return jsonify(Transcribed_text=text_content,Score=sent_results)
-
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -120,14 +113,13 @@ def display_results():
     uploaded_file = request.files['file']
     print (uploaded_file.filename)
     if uploaded_file.filename != '':
-        #uploaded_file.save(uploaded_file.filename)
+        uploaded_file.save(uploaded_file.filename)
         audio_gcs_path = upload_to_bucket(uploaded_file.filename,uploaded_file.filename,'audio_records_conference_calls')
         transcript_gcs_path = transcribe_gcs(audio_gcs_path)
         text_content = read_gcs_file(transcript_gcs_path)
         sent_results = analyze_sentiment(text_content)
-        #return results
     return render_template('results.html', output=text_content,results=sent_results)
 
 # Default port:
 if __name__ == '__main__':
-    app.run(host='localhost', port=5000)
+    app.run(host='localhost', port=8080)
